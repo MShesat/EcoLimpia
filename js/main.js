@@ -144,7 +144,15 @@ const SECTORS = [
 function normalize(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,'').trim(); }
 function levenshtein(a,b){ if(!a) return b.length; if(!b) return a.length; const m=[]; for(let i=0;i<=b.length;i++){m[i]=[i];} for(let j=0;j<=a.length;j++){m[0][j]=j;} for(let i=1;i<=b.length;i++) for(let j=1;j<=a.length;j++){m[i][j]=b[i-1]===a[j-1]?m[i-1][j-1]:Math.min(m[i-1][j-1]+1,m[i][j-1]+1,m[i-1][j]+1);} return m[b.length][a.length]; }
 
-// no leaflet map; using Google Maps iframe
+// Interactive OpenStreetMap embed: works without an API key.
+const DEFAULT_MAP = { lat: -12.0653, lng: -75.2049 };
+function setSectorMap(lat = DEFAULT_MAP.lat, lng = DEFAULT_MAP.lng) {
+  const iframe = document.getElementById('sectorMap');
+  if (!iframe) return;
+  const delta = 0.008;
+  const bbox = [Number(lng) - delta, Number(lat) - delta, Number(lng) + delta, Number(lat) + delta].join(',');
+  iframe.src = 'https://www.openstreetmap.org/export/embed.html?bbox=' + encodeURIComponent(bbox) + '&layer=mapnik&marker=' + encodeURIComponent(lat + ',' + lng);
+}
 
 const sectorForm = $('#sectorForm');
 if (sectorForm) {
@@ -160,21 +168,21 @@ if (sectorForm) {
       const data = await res.json();
       if (data && data.length) {
         const lat = data[0].lat, lon = data[0].lon;
-        if (iframe) iframe.src = 'https://maps.google.com/maps?q=' + lat + ',' + lon + '&t=&z=18&ie=UTF8&iwloc=&output=embed';
+        setSectorMap(lat, lon);
         out.innerHTML = `<div class="card p-4 border-l-4 border-green-500">
           <p class="font-bold text-green-700">Ubicación encontrada en Huancayo</p>
           <p class="text-sm text-gray-600 mt-1">Mostrando: ${escapeHtml(sec)}. Las rutas, días y horarios definitivos están pendientes de coordinación con la Municipalidad.</p>
           <p class="text-sm text-gray-500 mt-1">Estado: Ruta por confirmar · Horario pendiente de coordinación · Información en actualización.</p>
         </div>`;
       } else {
-        if (iframe) iframe.src = 'https://maps.google.com/maps?q=Huancayo,Peru&t=&z=13&ie=UTF8&iwloc=&output=embed';
+        setSectorMap();
         out.innerHTML = `<div class="card p-4 border-l-4 border-amber-400">
           <p class="font-bold text-amber-700">Servicio no disponible para esta ubicación</p>
           <p class="text-sm text-gray-600 mt-1">"${escapeHtml(sec)}" está fuera de Huancayo o no se encontró en la ciudad. EcoLimpia solo atiende Huancayo.</p>
         </div>`;
       }
     } catch (err) {
-      if (iframe) iframe.src = 'https://maps.google.com/maps?q=' + encodeURIComponent(sec + ',Huancayo,Peru') + '&t=&z=18&ie=UTF8&iwloc=&output=embed';
+      setSectorMap();
       out.innerHTML = `<div class="card p-4 border-l-4 border-green-500">
         <p class="font-bold text-green-700">Búsqueda realizada: ${escapeHtml(sec)}</p>
         <p class="text-sm text-gray-600 mt-1">Mostrando ubicación en Huancayo.</p>
