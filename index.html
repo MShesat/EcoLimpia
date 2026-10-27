@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoLimpia – Ruta EcoLimpia en alianza con la Municipalidad</title>
+<meta name="description" content="Plataforma ciudadana para reciclar, conocer rutas de recojo, puntos de acopio, reportar contaminación y educar en Huancayo, Perú.">
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+</head>
+<body>
+
+<!-- NAV -->
+<header class="bg-white/90 backdrop-blur sticky top-0 z-50 border-b border-slate-200">
+  <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="#inicio" class="flex items-center gap-2">
+      <span class="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center"><i class="fa-solid fa-recycle"></i></span>
+      <span class="font-extrabold text-xl text-green-700">EcoLimpia</span>
+    </a>
+    <button id="navToggle" class="md:hidden text-2xl text-slate-700" aria-label="Abrir menú"><i class="fa-solid fa-bars"></i></button>
+    <nav id="navMenu" class="hidden md:flex gap-6 items-center">
+      <a class="nav-link" href="#rutas">Rutas</a>
+      <a class="nav-link" href="#puntos">Puntos de acopio</a>
+      <a class="nav-link" href="#videos">Videos</a>
+      <a class="nav-link" href="#reportar">Reportar</a>
+      <a class="nav-link" href="#reciclables">Qué reciclar</a>
+      <a class="nav-link" href="#impacto">Impacto</a>
+      <a class="nav-link" href="#participa">Participa</a>
+      <a class="btn btn-primary" href="#reportar"><i class="fa-solid fa-flag"></i> Reporta un caso</a>
+    </nav>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="inicio" class="hero-gradient py-16 md:py-24">
+  <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-10 items-center">
+    <div>
+      <span class="badge badge-ok mb-3">Huancayo, Perú · Alianza con la Municipalidad</span>
+      <h1 class="text-4xl md:text-5xl font-extrabold text-slate-900 leading-tight">EcoLimpia</h1>
+      <p class="mt-3 text-xl md:text-2xl font-semibold text-green-700">“Hagamos circular el cambio. Una ciudad más limpia empieza con una ruta que todos podemos seguir”.</p>
+      <p class="mt-4 text-slate-600">Una plataforma sencilla para que los vecinos de Huancayo sepan qué reciclar, cómo hacerlo, dónde entregar sus residuos, cuándo pasará la ruta de recojo y cómo reportar problemas de contaminación. Conectamos vecinos, bodegas aliadas, recicladores, colegios, responsables de cuadra y la Municipalidad.</p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        <a class="btn btn-primary" href="#rutas"><i class="fa-solid fa-route"></i> Conoce la ruta de recojo</a>
+        <a class="btn btn-outline" href="#videos"><i class="fa-solid fa-play"></i> Aprende a reciclar</a>
+        <a class="btn btn-blue" href="#reportar"><i class="fa-solid fa-triangle-exclamation"></i> Reporta un problema</a>
+        <a class="btn btn-outline" href="#puntos"><i class="fa-solid fa-location-dot"></i> Encuentra un punto de acopio</a>
+      </div>
+    </div>
+    <div class="card overflow-hidden">
+      <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Plaza_de_armas_de_Huancayo_-_panoramio.jpg?width=1200" alt="Comunidad reciclando en Huancayo" class="w-full h-80 object-cover">
+    </div>
+  </div>
+</section>
+
+<!-- RUTAS -->
+<section id="rutas" class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Rutas y horarios de recolección</h2>
+    <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Plaza_de_armas_de_Huancayo_-_panoramio.jpg?width=900" alt="Rutas y horarios de recolección" class="section-bg-img">
+    <p class="section-sub mt-2">Conoce las rutas por las que pasará el equipo encargado de recoger los residuos reciclables. Las rutas, calles, días y horarios definitivos están <strong>pendientes de confirmación con la Municipalidad</strong>. No se muestran datos falsos.</p>
+
+    <div class="mt-8 grid md:grid-cols-3 gap-4">
+      <div class="card p-5">
+        <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-map text-green-600"></i> Mapa de rutas</h3>
+        <div class="h-48 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-sm text-center px-4">
+          Mapa interactivo se activará cuando existan rutas confirmadas.<br><span class="badge badge-pending mt-2">Ruta por confirmar</span>
+        </div>
+      </div>
+      <div class="card p-5">
+        <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-calendar text-green-600"></i> Datos de la ruta</h3>
+        <ul class="text-sm space-y-2 text-slate-600">
+          <li><strong>Barrios/sectores:</strong> <span class="badge badge-pending">Ruta por confirmar</span></li>
+          <li><strong>Días de recojo:</strong> <span class="badge badge-pending">Horario pendiente de coordinación</span></li>
+          <li><strong>Horario:</strong> <span class="badge badge-pending">Información en actualización</span></li>
+          <li><strong>Residuos:</strong> botellas plásticas limpias y secas (según confirmación)</li>
+          <li><strong>Estado:</strong> <span class="badge badge-pending">Programada (pendiente)</span></li>
+        </ul>
+      </div>
+      <div class="card p-5">
+        <h3 class="font-bold text-slate-800 mb-2"><i class="fa-solid fa-clipboard-check text-green-600"></i> Recomendaciones</h3>
+        <ul class="text-sm space-y-1 text-slate-600 list-disc list-inside">
+          <li>Entrega solo residuos limpios y secos.</li>
+          <li>Separa plástico, papel, cartón y orgánicos.</li>
+          <li>Lava y seca las botellas antes de entregarlas.</li>
+          <li>Ten listo el material en el punto acordado.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="mt-8 card p-6">
+      <h3 class="font-bold text-slate-800 mb-3"><i class="fa-solid fa-magnifying-glass text-green-600"></i> Consulta tu sector</h3>
+      <form id="sectorForm" class="flex flex-col sm:flex-row gap-3">
+        <input id="sectorInput" name="sector" placeholder="Ej. El Tambo, Chilca, Huancayo centro..." required>
+        <button class="btn btn-primary" type="submit">Consultar</button>
+      </form>
+      <iframe id="sectorMap" style="height:320px;width:100%;border:0;border-radius:.5rem" loading="lazy" src="https://www.google.com/maps?q=Huancayo,Peru&output=embed"></iframe>
+      <div id="sectorResult" class="mt-4"></div>
+    </div>
+  </div>
+</section>
+
+<!-- PUNTOS DE ACOPIO -->
+<section id="puntos" class="py-16 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Puntos de acopio y bodegas aliadas</h2>
+    <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Centro_de_la_ciudad_de_Huancayo_Junin_Peru.jpg?width=1200" alt="Puntos de acopio y bodegas aliadas" class="section-bg-img">
+    <p class="section-sub mt-2">Directorio visual de puntos de acopio y bodegas participantes. Los nombres, direcciones y horarios son <strong>ejemplos demostrativos</strong> hasta confirmar los establecimientos reales.</p>
+
+    <div class="mt-6 flex flex-wrap gap-3">
+      <select id="filterBarrio" class="max-w-xs">
+        <option value="">Todos los barrios</option>
+        <option value="tambo">El Tambo</option>
+        <option value="chilca">Chilca</option>
+        <option value="huancayo">Huancayo centro</option>
+      </select>
+      <select id="filterMaterial" class="max-w-xs">
+        <option value="">Todos los materiales</option>
+        <option value="plastico">Plástico</option>
+        <option value="papel">Papel/Cartón</option>
+        <option value="vidrio">Vidrio</option>
+      </select>
+    </div>
+
+    <div class="mt-8 grid md:grid-cols-3 gap-5">
+      <div class="card point-card p-5" data-barrio="tambo" data-materiales="plastico papel">
+        <span class="badge badge-demo mb-2">Ejemplo demostrativo</span>
+        <h3 class="font-bold text-slate-800">Bodega Aliada Demo 1</h3>
+        <p class="text-sm text-slate-600 mt-1"><i class="fa-solid fa-location-dot text-green-600"></i> Av. Principal s/n, El Tambo (referencia pendiente)</p>
+        <p class="text-sm text-slate-600"><i class="fa-solid fa-clock text-green-600"></i> Horario: <span class="badge badge-pending">Por confirmar</span></p>
+        <p class="text-sm text-slate-600"><i class="fa-solid fa-box text-green-600"></i> Recibe: plástico limpio y seco, papel/cartón</p>
+        <p class="text-xs text-slate-500 mt-2">Participa en entrega de bolsas reutilizables.</p>
+      </div>
+      <div class="card point-card p-5" data-barrio="chilca" data-materiales="plastico vidrio">
+        <span class="badge badge-demo mb-2">Ejemplo demostrativo</span>
+        <h3 class="font-bold text-slate-800">Punto de Acopio Demo 2</h3>
+        <p class="text-sm text-slate-600 mt-1"><i class="fa-solid fa-location-dot text-green-600"></i> Jr. Ejemplo 123, Chilca (referencia pendiente)</p>
+        <p class="text-sm text-slate-600"><i class="fa-solid fa-clock text-green-600"></i> Horario: <span class="badge badge-pending">Por confirmar</span></p>
+        <p class="text-sm text-slate-600"><i class="fa-solid fa-box text-green-600"></i> Recibe: plástico, vidrio</p>
+      </div>
+      <div class="card point-card p-5" data-barrio="huancayo" data-materiales="plastico papel vidrio">
+        <span class="badge badge-demo mb-2">Ejemplo demostrativo</span>
+        <h3 class="font-bold text-slate-800">Bodega Aliada Demo 3</h3>
+        <p class="text-sm text-slate-600 mt-1"><i class="fa-solid fa-location-dot text-green-600"></i> Centro de Huancayo (referencia pendiente)</p>
+        <p class="text-sm text-slate-600"><i class="fa-solid fa-clock text-green-600"></i> Horario: <span class="badge badge-pending">Por confirmar</span></p>
+        <p class="text-sm text-slate-600"><i class="fa-solid fa-box text-green-600"></i> Recibe: plástico, papel/cartón, vidrio</p>
+      </div>
+    </div>
+    <p class="text-xs text-slate-500 mt-4">¿Tu bodega quiere participar? Regístrala en la sección “Participa en EcoLimpia”.</p>
+  </div>
+</section>
+
+<!-- VIDEOS -->
+<section id="videos" class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Videos educativos y tutoriales</h2>
+    <p class="section-sub mt-2">Aprende a separar, limpiar, preparar residuos y crear manualidades con materiales reciclados. Videos reales de fuentes confiables.</p>
+
+    <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Video 1 -->
+      <div class="card overflow-hidden">
+        <div class="video-thumb relative cursor-pointer" data-vid="xNMRwqpOkLA" onclick="openVideo('xNMRwqpOkLA')"><img loading="lazy" src="https://img.youtube.com/vi/xNMRwqpOkLA/hqdefault.jpg" alt="Miniatura del video" class="w-full h-48 object-cover"><span class="absolute inset-0 flex items-center justify-center"><span class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-brands fa-youtube"></i></span></span></div>
+        <div class="p-4">
+          <span class="badge badge-ok">Manualidades</span>
+          <h3 class="font-bold mt-2">Macetero con botella de plástico</h3>
+          <p class="text-sm text-slate-600 mt-1">Cómo hacer un macetero reciclando una botella de plástico. Duración: 3:04.</p>
+        </div>
+      </div>
+      <!-- Video 2 -->
+      <div class="card overflow-hidden">
+        <div class="video-thumb relative cursor-pointer" data-vid="BmCoyWBuESo" onclick="openVideo('BmCoyWBuESo')"><img loading="lazy" src="https://img.youtube.com/vi/BmCoyWBuESo/hqdefault.jpg" alt="Miniatura del video" class="w-full h-48 object-cover"><span class="absolute inset-0 flex items-center justify-center"><span class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-brands fa-youtube"></i></span></span></div>
+        <div class="p-4">
+          <span class="badge badge-ok">Manualidades</span>
+          <h3 class="font-bold mt-2">3 maceteros con botellas de plástico</h3>
+          <p class="text-sm text-slate-600 mt-1">Mariposa, pez y piña con botellas recicladas. Duración: tutorial completo.</p>
+        </div>
+      </div>
+      <!-- Video 3 -->
+      <div class="card overflow-hidden">
+        <div class="video-thumb relative cursor-pointer" data-vid="viIH2zpQirY" onclick="openVideo('viIH2zpQirY')"><img loading="lazy" src="https://img.youtube.com/vi/viIH2zpQirY/hqdefault.jpg" alt="Miniatura del video" class="w-full h-48 object-cover"><span class="absolute inset-0 flex items-center justify-center"><span class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-brands fa-youtube"></i></span></span></div>
+        <div class="p-4">
+          <span class="badge badge-ok">Manualidades</span>
+          <h3 class="font-bold mt-2">Mini macetas con tapones de botella</h3>
+          <p class="text-sm text-slate-600 mt-1">Convierte tapones en mini maceteros para suculentas. Duración: 2:31.</p>
+        </div>
+      </div>
+      <!-- Video 4 -->
+      <div class="card overflow-hidden">
+        <div class="video-thumb relative cursor-pointer" data-vid="H3md1FjehI4" onclick="openVideo('H3md1FjehI4')"><img loading="lazy" src="https://img.youtube.com/vi/H3md1FjehI4/hqdefault.jpg" alt="Miniatura del video" class="w-full h-48 object-cover"><span class="absolute inset-0 flex items-center justify-center"><span class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-brands fa-youtube"></i></span></span></div>
+        <div class="p-4">
+          <span class="badge badge-ok">Organizadores</span>
+          <h3 class="font-bold mt-2">Organizador con cartón reciclado</h3>
+          <p class="text-sm text-slate-600 mt-1">Organizador colorido para escritorio con cartón. Duración: tutorial completo.</p>
+        </div>
+      </div>
+      <!-- Video 5 -->
+      <div class="card overflow-hidden">
+        <div class="video-thumb relative cursor-pointer" data-vid="gtFXXFHyNFs" onclick="openVideo('gtFXXFHyNFs')"><img loading="lazy" src="https://img.youtube.com/vi/gtFXXFHyNFs/hqdefault.jpg" alt="Miniatura del video" class="w-full h-48 object-cover"><span class="absolute inset-0 flex items-center justify-center"><span class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-brands fa-youtube"></i></span></span></div>
+        <div class="p-4">
+          <span class="badge badge-ok">Organizadores</span>
+          <h3 class="font-bold mt-2">Organizador con envases de leche</h3>
+          <p class="text-sm text-slate-600 mt-1">Reutiliza tetrabrick para un organizador de escritorio. Duración: 4:54.</p>
+        </div>
+      </div>
+      <!-- Video 6 -->
+      <div class="card overflow-hidden">
+        <div class="video-thumb relative cursor-pointer" data-vid="BmCoyWBuESo" onclick="openVideo('BmCoyWBuESo')"><img loading="lazy" src="https://img.youtube.com/vi/BmCoyWBuESo/hqdefault.jpg" alt="Miniatura del video" class="w-full h-48 object-cover"><span class="absolute inset-0 flex items-center justify-center"><span class="w-16 h-16 rounded-full bg-red-600 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-brands fa-youtube"></i></span></span></div>
+        <div class="p-4">
+          <span class="badge badge-ok">Cartón</span>
+          <h3 class="font-bold mt-2">15 manualidades fáciles con cartón</h3>
+          <p class="text-sm text-slate-600 mt-1">Ideas rápidas de reciclaje con cajas de cartón. Duración: tutorial.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-6 grid md:grid-cols-2 gap-4">
+      <div class="card p-5">
+        <h3 class="font-bold mb-2"><i class="fa-solid fa-book-open text-green-600"></i> Categorías</h3>
+        <ul class="text-sm text-slate-600 space-y-1">
+          <li>• Aprende a separar los residuos</li>
+          <li>• Limpieza y preparación</li>
+          <li>• Manualidades con materiales reciclados</li>
+          <li>• Consejos para reducir la basura</li>
+        </ul>
+      </div>
+      <div class="card p-5">
+        <h3 class="font-bold mb-2"><i class="fa-solid fa-circle-info text-blue-600"></i> Nota</h3>
+        <p class="text-sm text-slate-600">Los videos se pueden reemplazar o ampliar con contenido propio del proyecto. No se inventan enlaces; solo se usan videos públicos verificados.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REPORTAR -->
+<section id="reportar" class="py-16 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Reporta un caso de arrojo de basura</h2>
+    <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Trash_bin_Peru_Huancayo_Plaza.jpg?width=1200" alt="Reporta un caso de arrojo de basura" class="section-bg-img">
+    <p class="section-sub mt-2">Ayuda a detectar puntos críticos. Los reportes se registran en la plataforma; la integración directa con la Municipalidad está pendiente de coordinación.</p>
+
+    <div class="mt-8 grid lg:grid-cols-2 gap-6">
+      <form id="reportForm" class="card p-6 space-y-4" action="https://formsubmit.co/60216566@continental.edu.pe" method="POST" enctype="multipart/form-data">
+        <!-- Honeypot anti-spam -->
+        <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+        <input type="hidden" name="_subject" value="Reporte EcoLimpia">
+        <input type="hidden" name="_next" value="http://localhost:8123/index.html#reportar">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <div>
+          <label class="block text-sm font-semibold mb-1">Tipo de problema *</label>
+          <select name="problemType" required>
+            <option value="">Selecciona...</option>
+            <option>Arrojo de basura</option>
+            <option>Acumulación de residuos</option>
+            <option>Punto crítico de contaminación</option>
+            <option>Quema de basura</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Ubicación del incidente *</label>
+          <input name="location" placeholder="Calle, parque, terreno vacío..." required>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Referencia (barrio/sector)</label>
+          <input name="sector" placeholder="Ej. El Tambo, Chilca...">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Descripción breve *</label>
+          <textarea name="description" rows="3" required placeholder="Describe lo que observaste"></textarea>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Fecha aproximada</label>
+          <input type="date" name="incidentDate">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Fotografías (evidencia)</label>
+          <input type="file" id="reportPhotos" name="fotos" accept="image/*" multiple>
+          <div id="photoPreview" class="photo-preview mt-2"></div>
+          <p class="text-xs text-slate-500 mt-1">Máximo 5 imágenes. Toma fotos desde un lugar seguro.</p>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">DNI (obligatorio) *</label>
+          <input name="dni" placeholder="8 dígitos" required pattern="[0-9]{8}" maxlength="8">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Medio de contacto (opcional)</label>
+          <input name="contact" placeholder="Correo o teléfono (opcional)">
+        </div>
+        <button class="btn btn-primary w-full" type="submit"><i class="fa-solid fa-paper-plane"></i> Enviar reporte</button>
+        <p class="text-xs text-slate-500">Privacidad: las fotos y datos se usan solo para atender el reporte. No se publican datos personales automáticamente. Puedes reportar sin dejar contacto.</p>
+      </form>
+      <div class="space-y-4">
+        <div id="reportResult"></div>
+        <div class="card p-6">
+          <h3 class="font-bold mb-3">Seguimiento de reportes</h3>
+          <div id="trackingList" class="space-y-2"></div>
+          <p class="text-xs text-slate-500 mt-3">Estados posibles: Reporte recibido · Pendiente de revisión · Derivado al área responsable · En atención · Caso resuelto.</p>
+        </div>
+        <div class="card p-5 bg-amber-50 border border-amber-200">
+          <p class="text-sm text-amber-800"><i class="fa-solid fa-shield-halved"></i> Recomendación: no te enfrentes a las personas involucradas. Reporta desde un lugar seguro y, si hay peligro, comunícate con las autoridades.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RECICLABLES -->
+<section id="reciclables" class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">¿Qué residuos se pueden reciclar?</h2>
+    <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Plaza_de_la_Constituci%C3%B3n_Huancayo.jpg?width=1200" alt="¿Qué residuos se pueden reciclar?" class="section-bg-img">
+    <p class="section-sub mt-2">Guía visual. La lista se actualiza según lo que acepten la Municipalidad, los recicladores y las bodegas aliadas. No todos los puntos reciben los mismos materiales.</p>
+    <div class="mt-8 grid md:grid-cols-2 gap-6">
+      <div class="card p-6 border-t-4 border-green-500">
+        <h3 class="font-bold text-green-700 mb-3"><i class="fa-solid fa-check-circle"></i> Sí se recibe</h3>
+        <ul class="space-y-2 text-slate-700">
+          <li><i class="fa-solid fa-bottle-water text-green-600"></i> Botellas plásticas limpias y secas.</li>
+          <li><i class="fa-solid fa-file text-green-600"></i> Papel y cartón limpios (si el punto los acepta).</li>
+          <li><i class="fa-solid fa-circle-check text-green-600"></i> Otros materiales confirmados por el proyecto.</li>
+        </ul>
+      </div>
+      <div class="card p-6 border-t-4 border-red-400">
+        <h3 class="font-bold text-red-600 mb-3"><i class="fa-solid fa-times-circle"></i> No se recibe o requiere consulta</h3>
+        <ul class="space-y-2 text-slate-700">
+          <li><i class="fa-solid fa-ban text-red-500"></i> Residuos mezclados con restos de comida.</li>
+          <li><i class="fa-solid fa-ban text-red-500"></i> Envases con líquidos o sustancias peligrosas.</li>
+          <li><i class="fa-solid fa-ban text-red-500"></i> Materiales contaminados no recuperables.</li>
+          <li><i class="fa-solid fa-ban text-red-500"></i> Otros residuos no incluidos en las reglas del punto.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CANJE / INCENTIVOS -->
+<section id="canje" class="py-16 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Canje de premios e incentivos</h2>
+    <p class="section-sub mt-2">Participa en las actividades de EcoLimpia y recibe reconocimientos. El sistema de puntos y premios es una <strong>propuesta pendiente de validación</strong> hasta definir equivalencias y condiciones.</p>
+    <div class="mt-8 grid md:grid-cols-4 gap-4">
+      <div class="card p-5 text-center">
+        <i class="fa-solid fa-star text-3xl text-yellow-500"></i>
+        <h3 class="font-bold mt-2">Puntos</h3>
+        <p class="text-sm text-slate-600">Por cada entrega verificable de material reciclable.</p>
+      </div>
+      <div class="card p-5 text-center">
+        <i class="fa-solid fa-gift text-3xl text-pink-500"></i>
+        <h3 class="font-bold mt-2">Catálogo</h3>
+        <p class="text-sm text-slate-600">Premios/beneficios pendientes de aprobación.</p>
+      </div>
+      <div class="card p-5 text-center">
+        <i class="fa-solid fa-store text-3xl text-blue-500"></i>
+        <h3 class="font-bold mt-2">Bodegas aliadas</h3>
+        <p class="text-sm text-slate-600">Promociones y campañas conjuntas.</p>
+      </div>
+      <div class="card p-5 text-center">
+        <i class="fa-solid fa-trophy text-3xl text-green-600"></i>
+        <h3 class="font-bold mt-2">Reconocimientos</h3>
+        <p class="text-sm text-slate-600">Vecinos, familias, colegios y barrios.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPACTO -->
+<section id="impacto" class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Nuestro impacto ambiental</h2>
+    <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Parque_T%C3%BApac_Amaru_en_Huancayo.jpg?width=1200" alt="Nuestro impacto ambiental" class="section-bg-img">
+    <p class="section-sub mt-2">Resultados del proyecto. <strong>No se inventan estadísticas</strong>; mientras no existan registros verificados se muestra “Datos en proceso de recopilación”.</p>
+    <div class="mt-8 grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="card p-5">
+        <p class="text-sm text-slate-500">Kg reciclables recolectados</p>
+        <p class="text-2xl font-extrabold text-green-700">Datos en proceso</p>
+        <div class="bar mt-2"><div style="width:0%"></div></div>
+      </div>
+      <div class="card p-5">
+        <p class="text-sm text-slate-500">Botellas entregadas</p>
+        <p class="text-2xl font-extrabold text-green-700">Datos en proceso</p>
+        <div class="bar mt-2"><div style="width:0%"></div></div>
+      </div>
+      <div class="card p-5">
+        <p class="text-sm text-slate-500">Puntos de acopio activos</p>
+        <p class="text-2xl font-extrabold text-green-700">Datos en proceso</p>
+        <div class="bar mt-2"><div style="width:0%"></div></div>
+      </div>
+      <div class="card p-5">
+        <p class="text-sm text-slate-500">Bodegas aliadas</p>
+        <p class="text-2xl font-extrabold text-green-700">Datos en proceso</p>
+        <div class="bar mt-2"><div style="width:0%"></div></div>
+      </div>
+      <div class="card p-5">
+        <p class="text-sm text-slate-500">Vecinos participantes</p>
+        <p class="text-2xl font-extrabold text-green-700">Datos en proceso</p>
+        <div class="bar mt-2"><div style="width:0%"></div></div>
+      </div>
+      <div class="card p-5">
+        <p class="text-sm text-slate-500">Reportes recibidos/atendidos</p>
+        <p class="text-2xl font-extrabold text-green-700">Datos en proceso</p>
+        <div class="bar mt-2"><div style="width:0%"></div></div>
+      </div>
+      <div class="card p-5">
+        <p class="text-sm text-slate-500">Visitas a contenidos educativos</p>
+        <p class="text-2xl font-extrabold text-green-700">Datos en proceso</p>
+        <div class="bar mt-2"><div style="width:0%"></div></div>
+      </div>
+      <div class="card p-5">
+        <p class="text-sm text-slate-500">Participación de colegios</p>
+        <p class="text-2xl font-extrabold text-green-700">Datos en proceso</p>
+        <div class="bar mt-2"><div style="width:0%"></div></div>
+      </div>
+    </div>
+    <p class="mt-6 text-slate-600">Cada vecino que separa y entrega bien sus residuos contribuye a mantener Huancayo más limpio y a reducir la contaminación por plásticos.</p>
+  </div>
+</section>
+
+<!-- GALERIA HUANCAYO -->
+<section class="py-12 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Huancayo, nuestra ciudad</h2>
+    <p class="section-sub mt-2">Imágenes de referencia de Huancayo, Perú. Fuente: Wikimedia Commons (CC BY-SA).</p>
+    <div class="mt-6 grid md:grid-cols-3 gap-4">
+      <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Plaza_de_armas_de_Huancayo_-_panoramio.jpg?width=600" alt="Plaza de Armas de Huancayo" class="rounded-xl w-full h-48 object-cover card">
+      <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Plaza_Constituci%C3%B3n_adornada_con_motivo_de_Fiestas_Patrias.jpg?width=600" alt="Plaza Constitución Huancayo" class="rounded-xl w-full h-48 object-cover card">
+      <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Parque_T%C3%BApac_Amaru_en_Huancayo.jpg?width=600" alt="Parque Túpac Amaru Huancayo" class="rounded-xl w-full h-48 object-cover card">
+    </div>
+  </div>
+</section>
+
+<!-- PARTICIPA -->
+<section id="participa" class="py-16 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Participa en EcoLimpia</h2>
+    <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Plaza_de_armas_de_Huancayo_-_panoramio.jpg?width=1200" alt="Participa en EcoLimpia" class="section-bg-img">
+    <p class="section-sub mt-2">Invitamos a todos los actores de la ciudad a sumarse.</p>
+    <div class="mt-8 grid md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div class="card p-4 text-center"><i class="fa-solid fa-users text-2xl text-green-600"></i><p class="font-semibold mt-2 text-sm">Vecinos</p><p class="text-xs text-slate-500">Separar y entregar limpio.</p></div>
+      <div class="card p-4 text-center"><i class="fa-solid fa-store text-2xl text-blue-600"></i><p class="font-semibold mt-2 text-sm">Bodegas aliadas</p><p class="text-xs text-slate-500">Puntos de recepción.</p></div>
+      <div class="card p-4 text-center"><i class="fa-solid fa-recycle text-2xl text-emerald-600"></i><p class="font-semibold mt-2 text-sm">Recicladores</p><p class="text-xs text-slate-500">Recepción y recuperación.</p></div>
+      <div class="card p-4 text-center"><i class="fa-solid fa-school text-2xl text-purple-600"></i><p class="font-semibold mt-2 text-sm">Colegios</p><p class="text-xs text-slate-500">Actividades educativas.</p></div>
+      <div class="card p-4 text-center"><i class="fa-solid fa-house-chimney-user text-2xl text-amber-600"></i><p class="font-semibold mt-2 text-sm">Resp. de cuadra</p><p class="text-xs text-slate-500">Difusión y alertas.</p></div>
+      <div class="card p-4 text-center"><i class="fa-solid fa-landmark text-2xl text-slate-700"></i><p class="font-semibold mt-2 text-sm">Municipalidad</p><p class="text-xs text-slate-500">Rutas y recojo.</p></div>
+    </div>
+
+    <div class="mt-8 card p-6">
+      <h3 class="font-bold mb-3">Formulario de interés</h3>
+      <form id="interestForm" class="grid md:grid-cols-2 gap-4" action="https://formsubmit.co/60216566@continental.edu.pe" method="POST">
+      <input type="hidden" name="_subject" value="Interés en EcoLimpia">
+      <input type="hidden" name="_next" value="http://localhost:8123/index.html#participa">
+      <input type="hidden" name="_captcha" value="false">
+      <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+        <input name="nombre" placeholder="Nombre completo / establecimiento" required>
+        <input name="tipo" placeholder="Tipo (vecino, bodega, colegio...)" required>
+        <input name="contacto" placeholder="Correo o teléfono" required>
+        <input name="barrio" placeholder="Barrio o sector">
+        <textarea name="mensaje" placeholder="¿Cómo te gustaría participar?" rows="3" class="md:col-span-2"></textarea>
+        <button class="btn btn-primary md:col-span-2" type="submit">Enviar interés</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- NOTICIAS -->
+<section id="noticias" class="py-16 bg-white">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Noticias, campañas y actividades</h2>
+    <img loading="lazy" src="https://commons.wikimedia.org/wiki/Special:FilePath/Plaza_Constituci%C3%B3n_adornada_con_motivo_de_Fiestas_Patrias.jpg?width=1200" alt="Noticias, campañas y actividades" class="section-bg-img" style="opacity:0.12">
+    <p class="section-sub mt-2">Espacio para publicar campañas, jornadas, talleres, nuevas bodegas aliadas y cambios confirmados. Contenido actualizable sin reconstruir la página.</p>
+    <div class="mt-8 grid md:grid-cols-3 gap-5">
+      <div class="card overflow-hidden">
+        <img loading="lazy" src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=800&q=80" class="w-full h-40 object-cover" alt="Jornada de limpieza">
+        <div class="p-4">
+          <p class="text-xs text-slate-500">Fecha pendiente</p>
+          <h3 class="font-bold mt-1">Jornada de limpieza comunitaria</h3>
+          <p class="text-sm text-slate-600 mt-1">Actividad comunitaria para limpiar espacios públicos. Detalles por confirmar.</p>
+        </div>
+      </div>
+      <div class="card overflow-hidden">
+        <img loading="lazy" src="https://images.unsplash.com/photo-1604187351574-c75ca79f5807?auto=format&fit=crop&w=800&q=80" class="w-full h-40 object-cover" alt="Taller de reciclaje">
+        <div class="p-4">
+          <p class="text-xs text-slate-500">Fecha pendiente</p>
+          <h3 class="font-bold mt-1">Taller de manualidades recicladas</h3>
+          <p class="text-sm text-slate-600 mt-1">Crea objetos útiles con botellas y cartón. Inscripciones próximamente.</p>
+        </div>
+      </div>
+      <div class="card overflow-hidden">
+        <img loading="lazy" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=800&q=80" class="w-full h-40 object-cover" alt="Bodega aliada">
+        <div class="p-4">
+          <p class="text-xs text-slate-500">Próximamente</p>
+          <h3 class="font-bold mt-1">Nuevas bodegas aliadas</h3>
+          <p class="text-sm text-slate-600 mt-1">Se publicarán cuando se confirmen los establecimientos participantes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="py-16 bg-slate-50">
+  <div class="max-w-4xl mx-auto px-4">
+    <h2 class="section-title">Preguntas frecuentes</h2>
+    <input id="faqSearch" class="mt-4" placeholder="Buscar pregunta...">
+    <div class="mt-6 space-y-3">
+      <details class="faq"><summary>¿Qué materiales puedo reciclar?</summary><p class="mt-2 text-slate-600 text-sm">Botellas plásticas limpias y secas, papel y cartón limpios (si el punto los acepta) y otros materiales confirmados por el proyecto.</p></details>
+      <details class="faq"><summary>¿Cómo debo preparar las botellas plásticas?</summary><p class="mt-2 text-slate-600 text-sm">Lávalas, quítales restos de líquido, sécalas y aplástalas si es posible para ocupar menos espacio.</p></details>
+      <details class="faq"><summary>¿Dónde puedo entregar mis residuos?</summary><p class="mt-2 text-slate-600 text-sm">En los puntos de acopio y bodegas aliadas publicados. Mientras se confirman, consulta la sección de puntos.</p></details>
+      <details class="faq"><summary>¿Cómo puedo conocer la ruta y el horario de recojo?</summary><p class="mt-2 text-slate-600 text-sm">En la sección “Rutas y horarios”. Las rutas definitivas están pendientes de coordinación con la Municipalidad.</p></details>
+      <details class="faq"><summary>¿Qué hago si encuentro un lugar lleno de basura?</summary><p class="mt-2 text-slate-600 text-sm">Repórtalo en la sección “Reporta un caso” con fotos y ubicación.</p></details>
+      <details class="faq"><summary>¿Cómo puedo reportar un caso y adjuntar fotografías?</summary><p class="mt-2 text-slate-600 text-sm">Completa el formulario, adjunta hasta 5 fotos y envía. Recibirás un código de seguimiento.</p></details>
+      <details class="faq"><summary>¿Cómo puede mi bodega participar?</summary><p class="mt-2 text-slate-600 text-sm">Regístrate en el formulario de interés de la sección “Participa en EcoLimpia”.</p></details>
+      <details class="faq"><summary>¿Cómo funcionan los puntos y premios?</summary><p class="mt-2 text-slate-600 text-sm">Es una propuesta pendiente de validación. Cada entrega debe registrarse de manera verificable.</p></details>
+      <details class="faq"><summary>¿Cómo puedo participar con mi colegio?</summary><p class="mt-2 text-slate-600 text-sm">Inscríbete en el formulario de interés y organiza actividades educativas y manualidades.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO MODAL -->
+<div id="videoModal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-[100] p-4">
+  <div class="bg-white rounded-xl max-w-3xl w-full overflow-hidden">
+    <div class="flex justify-between items-center p-3 border-b">
+      <span class="font-semibold">Reproductor EcoLimpia</span>
+      <button onclick="closeVideo()" class="text-2xl text-slate-500">&times;</button>
+    </div>
+    <div class="aspect-video bg-black">
+      <iframe id="videoFrame" src="" class="w-full h-full" allowfullscreen allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin"></iframe>
+    </div>
+    <div class="p-3 text-sm text-slate-600 flex justify-between">
+      <span>Al publicar en un dominio (https) el video se reproduce aquí; en local, usa el enlace.</span>
+      <a id="videoLink" href="#" target="_blank" class="text-blue-600 underline">Ver en YouTube</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="bg-slate-900 text-slate-300 py-10">
+  <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-4 gap-6">
+    <div>
+      <h3 class="font-bold text-white text-lg">EcoLimpia</h3>
+      <p class="text-sm mt-2">Ruta EcoLimpia en alianza con la Municipalidad. Promovemos el reciclaje y la participación ciudadana en Huancayo.</p>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-2">Secciones</h4>
+      <ul class="text-sm space-y-1">
+        <li><a href="#rutas" class="hover:text-green-400">Rutas</a></li>
+        <li><a href="#puntos" class="hover:text-green-400">Puntos de acopio</a></li>
+        <li><a href="#videos" class="hover:text-green-400">Videos</a></li>
+        <li><a href="#reportar" class="hover:text-green-400">Reportar</a></li>
+      </ul>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-2">Contacto</h4>
+      <p class="text-sm">Correo y redes sociales oficiales se publicarán cuando estén disponibles. No se inventan datos de contacto.</p>
+      <p class="text-sm mt-2"><a href="https://wa.me/51983017362" target="_blank" class="text-green-400 hover:underline"><i class="fa-brands fa-whatsapp"></i> WhatsApp: +51 983 017 362</a></p>
+    </div>
+    <div>
+      <h4 class="font-semibold text-white mb-2">Privacidad</h4>
+      <p class="text-sm">Aviso de privacidad y condiciones de uso. Los datos personales no se publican automáticamente. Identificación de alianza con la Municipalidad solo cuando corresponda y esté autorizada.</p>
+    </div>
+  </div>
+  <div class="max-w-7xl mx-auto px-4 mt-6 pt-6 border-t border-slate-700 text-xs text-slate-500">
+    © 2026 EcoLimpia. Plataforma en desarrollo. Información sujeta a confirmación con la Municipalidad.
+  </div>
+</footer>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
