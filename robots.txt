@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mshesat.github.io/EcoLimpia/sitemap.xml
