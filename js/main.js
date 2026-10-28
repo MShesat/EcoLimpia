@@ -739,6 +739,15 @@ document.addEventListener('keydown', (e) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Asegurar siempre inicio en la parte superior si la URL no trae un hash específico
+  if (!window.location.hash || window.location.hash === '#inicio') {
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    setTimeout(() => window.scrollTo(0, 0), 50);
+  }
+
   renderTracking();
   initMainAllPointsMap();
   initTruckRoutesMap();
