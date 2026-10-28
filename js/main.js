@@ -612,22 +612,53 @@ if (reportForm) {
     const next = reportForm.querySelector('input[name="_next"]');
     if (next) next.value = window.location.href.split('#')[0] + '#reportar';
 
-    if (location.protocol === 'file:') {
-      showToast('Guardado localmente. Publica el sitio para enviar por correo.');
-    } else {
-      reportForm.submit();
+    const submitBtn = reportForm.querySelector('button[type="submit"]');
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Enviando...';
+    }
+
+    let isPendingActivation = false;
+    if (location.protocol !== 'file:') {
+      try {
+        const endpoint = reportForm.action.includes('/ajax/') ? reportForm.action : reportForm.action.replace('formsubmit.co/', 'formsubmit.co/ajax/');
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          body: fd,
+          headers: { 'Accept': 'application/json' }
+        });
+        const data = await res.json().catch(() => ({}));
+        if (data.success === 'false' && data.message && data.message.includes('Activation')) {
+          isPendingActivation = true;
+        }
+      } catch (err) {
+        console.warn('Error al enviar formulario:', err);
+      }
+    }
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Enviar reporte ciudadano';
+    }
+
+    let activationNotice = '';
+    if (isPendingActivation) {
+      activationNotice = `<p class="text-xs text-amber-700 bg-amber-50 p-2.5 rounded border border-amber-200 mt-2">
+        <i class="fa-solid fa-circle-exclamation"></i> <strong>Aviso de activación:</strong> Se ha enviado un correo de confirmación de FormSubmit. Revisa tu bandeja de entrada o Spam y pulsa <em>"Activate Form"</em> para empezar a recibir las alertas directamente.
+      </p>`;
     }
 
     $('#reportResult').innerHTML = `<div class="card p-5 border-l-4 border-green-500 bg-green-50/40">
       <p class="font-bold text-green-800"><i class="fa-solid fa-circle-check"></i> Reporte registrado con éxito</p>
       <p class="text-sm text-slate-700 mt-1">Código de seguimiento: <strong class="font-mono bg-white px-2 py-0.5 rounded border">${code}</strong></p>
-      <p class="text-xs text-slate-600 mt-1">También puedes notificar este código directamente por WhatsApp para atención rápida:</p>
-      <a class="btn btn-outline mt-3 text-xs py-2" target="_blank" rel="noopener noreferrer" href="https://wa.me/51983017362?text=${encodeURIComponent('Reporte EcoLimpia ' + code + ': ' + record.problemType + ' en ' + record.location)}"><i class="fa-brands fa-whatsapp"></i> Enviar alerta por WhatsApp</a>
+      ${activationNotice}
+      <p class="text-xs text-slate-600 mt-2">También puedes notificar este código directamente por WhatsApp para atención rápida:</p>
+      <a class="btn btn-outline mt-2 text-xs py-2" target="_blank" rel="noopener noreferrer" href="https://wa.me/51983017362?text=${encodeURIComponent('Reporte EcoLimpia ' + code + ': ' + record.problemType + ' en ' + record.location)}"><i class="fa-brands fa-whatsapp"></i> Enviar alerta por WhatsApp</a>
     </div>`;
     reportForm.reset();
     photoPreview.innerHTML = '';
     renderTracking();
-    showToast('Reporte enviado. Código: ' + code);
+    showToast(isPendingActivation ? 'Reporte registrado (pendiente de activar correo)' : 'Reporte enviado. Código: ' + code);
   });
 }
 
@@ -688,8 +719,14 @@ if (interestForm) {
     if (location.protocol === 'file:') {
       showToast('Guardado localmente. Publica el sitio para enviar por correo.');
     } else {
-      interestForm.submit();
-      showToast('Gracias por tu interés. Te contactaremos pronto.');
+      const endpoint = interestForm.action.includes('/ajax/') ? interestForm.action : interestForm.action.replace('formsubmit.co/', 'formsubmit.co/ajax/');
+      fetch(endpoint, {
+        method: 'POST',
+        body: fd,
+        headers: { 'Accept': 'application/json' }
+      }).catch(err => console.warn('Error interestForm:', err));
+      showToast('Gracias por tu interés. Solicitud enviada.');
+      interestForm.reset();
     }
   });
 }
