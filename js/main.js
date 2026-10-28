@@ -562,6 +562,21 @@ if (photoInput) {
   });
 }
 
+function isValidDNI(dni) {
+  dni = String(dni || '').trim();
+  // Debe contener exactamente 8 dígitos numéricos
+  if (!/^[0-9]{8}$/.test(dni)) return false;
+  // Descartar números con todos los dígitos idénticos (00000000, 11111111, etc.)
+  if (/^(\d)\1{7}$/.test(dni)) return false;
+  // Descartar secuencias comunes de prueba o falsos
+  const invalidDnis = [
+    '12345678', '87654321', '01234567', '76543210',
+    '00000001', '00000012', '11223344', '12121212'
+  ];
+  if (invalidDnis.includes(dni)) return false;
+  return true;
+}
+
 const reportForm = $('#reportForm');
 if (reportForm) {
   reportForm.addEventListener('submit', async (e) => {
@@ -584,15 +599,35 @@ if (reportForm) {
     const required = ['problemType', 'location', 'description', 'dni'];
     for (const r of required) {
       if (!fd.get(r) || !String(fd.get(r)).trim()) {
-        showToast('Completa los campos obligatorios (*).');
+        showToast('Completa todos los campos obligatorios (*).');
         return;
       }
     }
+
     const dni = String(fd.get('dni')).trim();
-    if (!/^[0-9]{8}$/.test(dni)) {
-      showToast('El DNI debe tener 8 dígitos.');
+    if (!isValidDNI(dni)) {
+      showToast('Por seguridad anti-spam: ingresa un número de DNI peruano válido (8 dígitos no correlativos ni repetidos).');
+      const dniInput = reportForm.querySelector('input[name="dni"]');
+      if (dniInput) {
+        dniInput.focus();
+        dniInput.classList.add('ring-2', 'ring-red-500');
+        setTimeout(() => dniInput.classList.remove('ring-2', 'ring-red-500'), 3500);
+      }
       return;
     }
+
+    const loc = String(fd.get('location') || '').trim();
+    if (loc.length < 4) {
+      showToast('Por favor detalla la ubicación del incidente (mínimo 4 caracteres).');
+      return;
+    }
+
+    const desc = String(fd.get('description') || '').trim();
+    if (desc.length < 8) {
+      showToast('Por favor describe brevemente el incidente con más detalle (mínimo 8 caracteres).');
+      return;
+    }
+
     const code = 'EL-' + Date.now().toString(36).toUpperCase().slice(-6);
     const record = {
       code,
@@ -708,13 +743,40 @@ if (interestForm) {
     const fd = new FormData(interestForm);
     const honey = interestForm.querySelector('input[name="_honey"]');
     if (honey && honey.value.trim() !== '') return;
-    const contact = String(fd.get('contacto') || '').trim();
-    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
-    const isPhone = /^[0-9+\s-]{7,15}$/.test(contact);
-    if (!isEmail && !isPhone) {
-      showToast('Ingresa un correo o número de teléfono válido.');
+
+    // Validación completa anti-spam para la sección de intereses
+    const nombre = String(fd.get('nombre') || '').trim();
+    if (nombre.length < 3) {
+      showToast('Por favor ingresa tu nombre completo o de tu local (mínimo 3 caracteres).');
       return;
     }
+
+    const tipo = String(fd.get('tipo') || '').trim();
+    if (!tipo) {
+      showToast('Por favor selecciona el tipo de participante.');
+      return;
+    }
+
+    const contact = String(fd.get('contacto') || '').trim();
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact);
+    const isPhone = /^(?:(?:\+?51\s*)?9\d{8}|[0-9+\s-]{7,15})$/.test(contact);
+    if (!isEmail && !isPhone) {
+      showToast('Ingresa un WhatsApp válido (ej. 983017362) o un correo electrónico.');
+      return;
+    }
+
+    const barrio = String(fd.get('barrio') || '').trim();
+    if (barrio.length < 4) {
+      showToast('Por favor indica tu dirección o sector en Huancayo (mínimo 4 caracteres).');
+      return;
+    }
+
+    const mensaje = String(fd.get('mensaje') || '').trim();
+    if (mensaje.length < 10) {
+      showToast('Por favor completa el campo de propuesta explicando cómo te gustaría participar (mínimo 10 caracteres).');
+      return;
+    }
+
     const list = JSON.parse(localStorage.getItem('ecolimpia_interest') || '[]');
     list.unshift(Object.fromEntries(fd.entries()));
     localStorage.setItem('ecolimpia_interest', JSON.stringify(list));
@@ -729,7 +791,7 @@ if (interestForm) {
         body: fd,
         headers: { 'Accept': 'application/json' }
       }).catch(err => console.warn('Error interestForm:', err));
-      showToast('Gracias por tu interés. Solicitud enviada.');
+      showToast('Solicitud recibida. Te contactaremos pronto para coordinar.');
       interestForm.reset();
     }
   });

@@ -564,7 +564,8 @@
           </div>
           <div>
             <label class="block text-sm font-semibold mb-1">DNI del ciudadano *</label>
-            <input name="dni" placeholder="8 dígitos" required pattern="[0-9]{8}" maxlength="8">
+            <input name="dni" placeholder="Ej. 70216566 (8 dígitos)" required pattern="[0-9]{8}" maxlength="8" inputmode="numeric" title="DNI peruano válido de 8 dígitos">
+            <span class="text-[11px] text-slate-500 block mt-0.5"><i class="fa-solid fa-shield-halved text-slate-400"></i> Obligatorio para validar el reporte y evitar spam</span>
           </div>
         </div>
         <div>
@@ -682,11 +683,35 @@
         <input type="hidden" name="_next" value="https://mshesat.github.io/EcoLimpia/#participa">
         <input type="hidden" name="_captcha" value="false">
         <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
-        <input name="nombre" placeholder="Nombre completo o nombre del negocio *" required>
-        <input name="tipo" placeholder="Tipo (Bodega, Restaurante, Vecino, Colegio...) *" required>
-        <input name="contacto" placeholder="Teléfono / WhatsApp o correo *" required>
-        <input name="barrio" placeholder="Dirección o sector (Ej. Av. San Carlos, El Tambo...)">
-        <textarea name="mensaje" placeholder="¿Cómo te gustaría participar en EcoLimpia?" rows="3" class="md:col-span-2"></textarea>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Nombre o negocio *</label>
+          <input name="nombre" placeholder="Nombre completo o nombre del negocio *" required minlength="3">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Tipo de participante *</label>
+          <select name="tipo" required>
+            <option value="">Selecciona tipo...</option>
+            <option>Bodega o comercio aliado</option>
+            <option>Restaurante o cafetería</option>
+            <option>Vecino voluntario</option>
+            <option>Colegio o institución educativa</option>
+            <option>Junta vecinal o comunidad</option>
+            <option>Otro</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Contacto directo (WhatsApp o correo) *</label>
+          <input name="contacto" placeholder="WhatsApp (9 dígitos) o correo electrónico *" required>
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Dirección o sector en Huancayo *</label>
+          <input name="barrio" placeholder="Ej. Av. San Carlos 1401, El Tambo... *" required minlength="4">
+        </div>
+        <div class="md:col-span-2">
+          <label class="block text-sm font-semibold mb-1">¿Cómo te gustaría participar en EcoLimpia? *</label>
+          <textarea name="mensaje" placeholder="Describe cómo te gustaría colaborar o si deseas un contenedor de reciclaje en tu local (mínimo 10 caracteres) *" rows="3" required minlength="10" class="w-full"></textarea>
+          <span class="text-[11px] text-slate-500 block mt-0.5"><i class="fa-solid fa-circle-info text-slate-400"></i> Todos los campos son obligatorios para prevenir mensajes automatizados.</span>
+        </div>
         <button class="btn btn-primary md:col-span-2 justify-center" type="submit"><i class="fa-solid fa-paper-plane"></i> Enviar solicitud de participación</button>
       </form>
     </div>
