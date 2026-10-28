@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#16a34a"/>
+      <stop offset="50%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#grad)"/>
+  <circle cx="32" cy="32" r="24" fill="none" stroke="#dcfce7" stroke-width="2.5" opacity="0.4"/>
+  <!-- Simbolo de reciclaje limpio -->
+  <g fill="#ffffff" transform="translate(13, 13)">
+    <path d="M19 3 L23 7 L17 13 L15 11 L18 8 C12 8 8 13 8 19 L4 19 C4 11 10 4 19 4 Z"/>
+    <path d="M35 19 C35 28 29 35 20 35 L20 31 C26 31 31 26 31 19 L35 19 Z"/>
+    <path d="M19 35 L15 31 L21 25 L23 27 L20 30 C26 30 30 25 30 19 L34 19 C34 27 28 34 19 34 Z" transform="rotate(120 19 19)"/>
+    <path d="M19 35 L15 31 L21 25 L23 27 L20 30 C26 30 30 25 30 19 L34 19 C34 27 28 34 19 34 Z" transform="rotate(240 19 19)"/>
+    <circle cx="19" cy="19" r="4.5" fill="#dcfce7"/>
+  </g>
+</svg>
