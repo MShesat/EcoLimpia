@@ -570,13 +570,17 @@ if (reportForm) {
     if (honey && honey.value.trim() !== '') return;
 
     const last = parseInt(localStorage.getItem('ecolimpia_last_report') || '0', 10);
-    if (Date.now() - last < 60000) {
-      showToast('Espera un momento antes de enviar otro reporte.');
+    if (Date.now() - last < 5000) {
+      showToast('Espera unos segundos antes de enviar otro reporte.');
       return;
     }
     localStorage.setItem('ecolimpia_last_report', String(Date.now()));
 
     const fd = new FormData(reportForm);
+    // Evitar enviar partes vacías si no se adjuntaron fotos
+    if (!photoInput || !photoInput.files || photoInput.files.length === 0) {
+      fd.delete('fotos');
+    }
     const required = ['problemType', 'location', 'description', 'dni'];
     for (const r of required) {
       if (!fd.get(r) || !String(fd.get(r)).trim()) {
