@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@razroo/opencode-model-fallback": "^0.3.2",
+    "opencode-omniroute-router": "^0.2.0"
+  }
+}

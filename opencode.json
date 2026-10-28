@@ -1,0 +1,112 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "orchestrator",
+  "plugins": [
+    "@dietrichgebert/ponytail",
+    {
+      "package": "@omniroute/opencode-plugin-v2",
+      "options": {
+        "providerId": "omniroute",
+        "displayName": "OmniRoute",
+        "baseURL": "http://localhost:20128/v1",
+        "modelCacheTtl": 300000,
+        "autoSyncIntervalMs": 300000,
+        "features": {
+          "combos": true,
+          "enrichment": true,
+          "diskCache": true
+        }
+      }
+    },
+    "opencode-omniroute-router",
+    "@razroo/opencode-model-fallback"
+  ],
+  "agents": {
+    "orchestrator": {
+      "description": "Strategic orchestrator that delegates tasks to specialized subagents",
+      "mode": "all",
+      "hidden": false,
+      "model": "opencode/glm-5.3-flash-free",
+      "fallback_models": [
+        "opencode/glm-5.3-flash-free",
+        "groq/llama-3.3-70b-versatile"
+      ],
+      "system": "Eres un orquestador estratégico. Tu única función es analizar la petición del usuario y delegar la tarea al subagente especializado más adecuado (`coder`, `architect`, `reviewer` o `scout`). Solo debes actuar como 'cerebro' y realizar la tarea tú mismo si es una consulta extremadamente simple o si ningún subagente está disponible. Para el resto de casos, utiliza la herramienta `task` para delegar.",
+      "permissions": [
+        { "action": "subagent", "resource": "coder", "effect": "allow" },
+        { "action": "subagent", "resource": "architect", "effect": "allow" },
+        { "action": "subagent", "resource": "reviewer", "effect": "allow" },
+        { "action": "subagent", "resource": "scout", "effect": "allow" }
+      ]
+    },
+    "coder": {
+      "description": "Implements and edits code",
+      "mode": "subagent",
+      "model": "opencode/glm-5.3-flash-free",
+      "fallback_models": [
+        "groq/llama-3.3-70b-versatile",
+        "mistral/codestral-latest"
+      ],
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "ask" }
+      ],
+      "system": "Use the ponytail skill by default to generate minimalist code."
+    },
+    "architect": {
+      "description": "Designs architecture and plans changes",
+      "mode": "subagent",
+      "model": "opencode/nemotron-3-ultra-free",
+      "fallback_models": [
+        "gemini/gemini-2.5-pro",
+        "nvidia/meta/llama-3.1-405b-instruct"
+      ],
+      "permissions": [
+        { "action": "edit", "resource": "*", "effect": "allow" },
+        { "action": "shell", "resource": "*", "effect": "ask" }
+      ],
+      "system": "Use graphify to explore the codebase before designing."
+    },
+    "reviewer": {
+      "description": "Reviews code without editing files",
+      "mode": "subagent",
+      "model": "opencode/nemotron-3.5-lightning-free",
+      "fallback_models": [
+        "bazaarlink/claude-opus-4.7",
+        "ollama/glm-5.1"
+      ],
+      "permissions": [
+        { "action": "read", "resource": "*", "effect": "allow" },
+        { "action": "grep", "resource": "*", "effect": "allow" },
+        { "action": "glob", "resource": "*", "effect": "allow" },
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "deny" }
+      ]
+    },
+    "scout": {
+      "description": "Explores and searches the codebase",
+      "mode": "subagent",
+      "model": "opencode/nemotron-3.5-super-vl-free",
+      "fallback_models": [
+        "cloudflare/@cf/meta/llama-3.1-8b-instruct",
+        "llm7/gpt-4o-mini"
+      ],
+      "permissions": [
+        { "action": "read", "resource": "*", "effect": "allow" },
+        { "action": "grep", "resource": "*", "effect": "allow" },
+        { "action": "glob", "resource": "*", "effect": "allow" },
+        { "action": "edit", "resource": "*", "effect": "deny" },
+        { "action": "shell", "resource": "*", "effect": "deny" }
+      ],
+      "system": "Use graphify to explore the codebase."
+    },
+    "build": {
+      "permissions": [
+        { "action": "subagent", "resource": "coder", "effect": "allow" },
+        { "action": "subagent", "resource": "architect", "effect": "allow" },
+        { "action": "subagent", "resource": "reviewer", "effect": "allow" },
+        { "action": "subagent", "resource": "scout", "effect": "allow" }
+      ]
+    }
+  }
+}
